@@ -71,18 +71,19 @@ module OneLogin
         @attr_statements ||= begin
           attributes = Attributes.new
 
-          stmt_element = xpath_first_from_signed_assertion('/a:AttributeStatement')
-          return attributes if stmt_element.nil?
+          stmt_elements = xpath_each_from_signed_assertion('/a:AttributeStatement')
+          return attributes if stmt_elements.nil?
 
-          stmt_element.elements.each do |attr_element|
-            name  = attr_element.attributes["Name"]
-            values = attr_element.elements.collect{|e|
-              # SAMLCore requires that nil AttributeValues MUST contain xsi:nil XML attribute set to "true" or "1"
-              # otherwise the value is to be regarded as empty.
-              ["true", "1"].include?(e.attributes['xsi:nil']) ? nil : e.text.to_s
-            }
-
-            attributes.add(name, values)
+          stmt_elements.each do |stmt_element|
+            stmt_element.elements.each do |attr_element|
+              name  = attr_element.attributes["Name"]
+              values = attr_element.elements.collect{|e|
+                # SAMLCore requires that nil AttributeValues MUST contain xsi:nil XML attribute set to "true" or "1"
+                # otherwise the value is to be regarded as empty.
+                ["true", "1"].include?(e.attributes['xsi:nil']) ? nil : e.text.to_s
+              }
+              attributes.add(name, values)
+            end
           end
 
           attributes
@@ -197,6 +198,27 @@ module OneLogin
             { "p" => PROTOCOL, "a" => ASSERTION },
             { 'id' => document.signed_element_id }
         )
+
+        node
+      end
+
+
+      def xpath_each_from_signed_assertion(subelt=nil)
+        node = REXML::XPath.each(
+            document,
+            "/p:Response/a:Assertion[@ID=$id]#{subelt}",
+            { "p" => PROTOCOL, "a" => ASSERTION },
+            { 'id' => document.signed_element_id }
+        )
+        unless node.any?
+          node = REXML::XPath.each(
+              document,
+              "/p:Response[@ID=$id]/a:Assertion#{subelt}",
+              { "p" => PROTOCOL, "a" => ASSERTION },
+              { 'id' => document.signed_element_id }
+          )
+        end
+
         node
       end
 

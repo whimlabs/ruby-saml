@@ -44,6 +44,10 @@ class Minitest::Test
     @response_document6 ||= File.read(File.join(File.dirname(__FILE__), 'responses', 'r1_response6.xml.base64'))
   end
 
+  def response_with_multiple_attribute_statements
+    @response_with_multiple_attribute_statements ||= File.read(File.join(File.dirname(__FILE__), 'responses', 'response_with_multiple_attribute_statements.xml.base64'))
+  end
+
   def ampersands_response
     @ampersands_response ||= File.read(File.join(File.dirname(__FILE__), 'responses', 'response_with_ampersands.xml.base64'))
   end
