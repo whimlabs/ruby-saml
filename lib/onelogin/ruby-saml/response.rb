@@ -76,7 +76,7 @@ module OneLogin
 
           stmt_elements.each do |stmt_element|
             stmt_element.elements.each do |attr_element|
-              name  = attr_element.attributes["Name"]
+              name  = attr_element.attributes["FriendlyName"] || attr_element.attributes["Name"]
               values = attr_element.elements.collect{|e|
                 # SAMLCore requires that nil AttributeValues MUST contain xsi:nil XML attribute set to "true" or "1"
                 # otherwise the value is to be regarded as empty.

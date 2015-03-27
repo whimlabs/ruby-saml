@@ -235,8 +235,8 @@ class RubySamlTest < Minitest::Test
       it "extract all attributes from multiple attrubute statements" do
         response = OneLogin::RubySaml::Response.new(response_with_multiple_attribute_statements)
 
-        assert_equal "Joe User", response.attributes['Role']
-        assert_equal "joe.user@example.com", response.attributes["urn:oid:1.2.840.113549.1.9.1"]
+        assert_equal "nameid", response.attributes[:uid]
+        assert_equal "joe.user@example.com", response.attributes[:email]
       end
 
       it "work for implicit namespaces" do
